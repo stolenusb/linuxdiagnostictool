@@ -1,5 +1,6 @@
 bin/
 *.o
+*.sh
 
 *.swp
 *.log

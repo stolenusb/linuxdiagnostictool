@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc/include
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
@@ -9,7 +9,7 @@ all: $(BIN)
 
 $(BIN): $(OBJ)
 	@mkdir -p bin
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ -lncurses
 
 clean:
 	rm -rf src/*.o bin/
