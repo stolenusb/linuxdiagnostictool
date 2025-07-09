@@ -75,6 +75,7 @@ CpuCoreData CpuInfo::readCpuStats()
 
 std::string CpuInfo::getCpuUsage()
 {
+    
     std::ostringstream oss;
 
     oss << "global" << " " << std::fixed << std::setprecision(2) << usage << "\n";
