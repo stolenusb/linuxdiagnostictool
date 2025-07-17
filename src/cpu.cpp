@@ -81,7 +81,7 @@ std::string CpuInfo::getCpuUsage()
     oss << "global" << " " << std::fixed << std::setprecision(2) << usage << "\n";
 
     for(auto const& [core, use] : coreUsage)
-        oss << core << " " << std::fixed << std::setprecision(2) << use << "\n";
+        oss << core << ": " << std::fixed << std::setprecision(2) << use << "%\n";
 
     return oss.str();
 }
