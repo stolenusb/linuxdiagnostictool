@@ -52,6 +52,27 @@ CpuInfo::~CpuInfo()
         updater.join();
 }
 
+void CpuInfo::displayInfo(WINDOW *win, int width)
+{
+    std::string usage = getCpuUsage();
+    std::istringstream iss(usage);
+    
+    std::string lineText;
+    std::getline(iss, lineText);
+    std::string cpuTitle = "CPU Usage: " + lineText.substr(lineText.find(" ") + 1) + "%";
+    
+    wclear(win);
+    box(win, 0, 0);
+    mvwprintw(win, 0, (width - cpuTitle.size()) / 2, "%s", cpuTitle.c_str());
+    
+    int line = 1;
+    while(std::getline(iss, lineText)) {
+        mvwprintw(win, line++, 2, "%s", lineText.c_str());
+    }
+
+    wrefresh(win);
+}
+
 CpuCoreData CpuInfo::readCpuStats()
 {
     CpuCoreData dataMap;

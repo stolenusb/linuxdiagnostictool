@@ -1,4 +1,5 @@
 #pragma once
+#include <ncurses.h>
 
 class MemInfo {
 public:
@@ -7,4 +8,5 @@ public:
     unsigned long long readMemUsage();
     unsigned long long totalMemNum;
     std::string totalMemStr;
+    void displayInfo(WINDOW* win, int width);
 };

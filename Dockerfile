@@ -8,6 +8,5 @@ WORKDIR /app
 
 COPY . .
 
-RUN make
 
-CMD ["./bin/linuxdiag"]
+CMD ["./dev.sh"]

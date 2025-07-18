@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ncurses.h>
 #include <atomic>
 #include <unordered_map>
 
@@ -31,4 +32,5 @@ public:
     ~CpuInfo();
 
     std::string getCpuUsage();
+    void displayInfo(WINDOW* win, int width);
 };
