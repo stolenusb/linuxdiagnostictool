@@ -6,6 +6,7 @@
 #include <cpu.h>
 #include <mem.h>
 #include <uptime.h>
+#include <internet.h>
 
 #define ESC_BTN 27
 
@@ -22,6 +23,7 @@ int main()
     CpuInfo Cpu;
     MemInfo Mem;
     UpTime upTime;
+    NetInfo Net;
     
     int height = 2 + std::thread::hardware_concurrency();
     int width = 20;
@@ -29,8 +31,9 @@ int main()
     int startX = 0;
 
     WINDOW* cpuWin = newwin(height, width, startY, startX);
-    WINDOW* memWin = newwin(4, width, startY, startX + width);
+    WINDOW* memWin = newwin(3, width, startY, startX + width);
     WINDOW* uptimeWin = newwin(2, width, startY, startX + width * 2);
+    WINDOW* netWin = newwin(4, width, startY, startX + width * 3);
 
     while(1) {
         if(getch() == ESC_BTN)
@@ -45,12 +48,16 @@ int main()
         // UPTIME
         upTime.displayInfo(uptimeWin);
 
+        // NET
+        Net.displayInfo(netWin);
+
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     
     delwin(cpuWin);
     delwin(memWin);
     delwin(uptimeWin);
+    delwin(netWin);
     endwin();
     
     return 0;

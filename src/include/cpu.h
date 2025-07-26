@@ -19,6 +19,13 @@ struct CpuData {
 using CpuCoreData = std::unordered_map<std::string, CpuData>;
 
 class CpuInfo {
+public:
+    CpuInfo();
+    ~CpuInfo();
+
+    std::string getCpuUsage();
+    void displayInfo(WINDOW* win, int width);
+
 private:
     std::atomic<float> usage{0.0f};
     std::unordered_map<std::string, float> coreUsage;
@@ -26,11 +33,4 @@ private:
     bool running;
 
     CpuCoreData readCpuStats();
-    
-public:
-    CpuInfo();
-    ~CpuInfo();
-
-    std::string getCpuUsage();
-    void displayInfo(WINDOW* win, int width);
 };
