@@ -1,6 +1,5 @@
 #include <sstream>
 #include <fstream>
-#include <vector>
 #include <thread>
 #include <internet.h>
 
@@ -82,14 +81,103 @@ NetData NetInfo::readNetData()
     return data;
 }
 
-void NetInfo::displayInfo(WINDOW* win)
+std::vector<PortData> NetInfo::getOpenPorts()
 {
-    wclear(win);
-    box(win, 0, 0);
-    
-    mvwprintw(win, 0, 0, "Net Usage: %s", wan_if.c_str());
-    mvwprintw(win, 1, 2, "In: %.3f MB/s", received);
-    mvwprintw(win, 2, 2, "Out: %.3f MB/s", transmitted);
+    std::vector<PortData> OpenPorts;
+    std::string Line;
 
-    wrefresh(win);
+    {
+        std::ifstream tcpFile("/proc/net/tcp");
+        while(std::getline(tcpFile, Line)) {
+            std::vector<std::string> Fields;
+            std::istringstream iss(Line);
+            std::string field;
+
+            while(iss >> field)
+                Fields.push_back(field);
+            
+            if(Fields.at(3) == "0A") {
+                const int portnum = std::stoi(Fields.at(1).substr(9), nullptr, 16);
+                bool exists = false;
+                for(const PortData& portdata : OpenPorts) {
+                    if(portdata.port == portnum) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if(exists)
+                    continue;
+                
+                OpenPorts.push_back({.port = portnum, .tcp = true});
+            }
+        }
+    }
+
+    {
+        std::ifstream udpFile("/proc/net/udp");
+        while(std::getline(udpFile, Line)) {
+            std::vector<std::string> Fields;
+            std::string field;
+            std::istringstream iss(Line);
+
+            while(iss >> field)
+                Fields.push_back(field);
+
+            if(Fields.at(3) == "0A") {
+                const int portnum = std::stoi(Fields.at(1).substr(9), nullptr, 16);
+                bool exists = false;
+                for(const PortData& portdata : OpenPorts) {
+                    if(portdata.port == portnum) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if(exists)
+                    continue;
+                
+                OpenPorts.push_back({.port = portnum, .tcp = false});
+            }
+        }
+    }
+
+    return OpenPorts;
+}
+
+void NetInfo::displayInfo(WINDOW* win, WINDOW* win_ports)
+{
+    {
+        wclear(win);
+        box(win, 0, 0);
+        
+        mvwprintw(win, 0, 2, "Net Usage: %s", wan_if.c_str());
+        mvwprintw(win, 1, 2, "In: %.3f MB/s", received);
+        mvwprintw(win, 2, 2, "Out: %.3f MB/s", transmitted);
+
+        wrefresh(win);
+    }
+
+    {
+        wclear(win_ports);
+        box(win_ports, 0, 0);
+
+        std::vector<PortData> OpenPorts = getOpenPorts();
+        const size_t ports_count = OpenPorts.size();
+        if(ports_count > 0) {
+            wresize(win_ports, 2 + ports_count, 20);
+            mvwprintw(win_ports, 0, 2, "Open ports:");
+
+            for(size_t i = 0; i < ports_count; i++) {
+                const PortData& portdata = OpenPorts.at(i);
+
+                if(portdata.tcp)
+                    mvwprintw(win_ports, i + 1, 2, "TCP: %d", portdata.port);
+                else
+                    mvwprintw(win_ports, i + 1, 2, "UDP: %d", portdata.port);
+            }
+        }
+
+        wrefresh(win_ports);
+    }
 }

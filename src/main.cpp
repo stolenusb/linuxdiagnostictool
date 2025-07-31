@@ -32,8 +32,9 @@ int main()
 
     WINDOW* cpuWin = newwin(height, width, startY, startX);
     WINDOW* memWin = newwin(3, width, startY, startX + width);
-    WINDOW* uptimeWin = newwin(2, width, startY, startX + width * 2);
-    WINDOW* netWin = newwin(4, width, startY, startX + width * 3);
+    WINDOW* uptimeWin = newwin(2, width, startY + 3, startX + width);
+    WINDOW* netWin = newwin(4, width, startY, startX + width * 2);
+    WINDOW* portsWin = newwin(2, width, startY + 4, startX + width * 2);
 
     while(1) {
         if(getch() == ESC_BTN)
@@ -49,7 +50,7 @@ int main()
         upTime.displayInfo(uptimeWin);
 
         // NET
-        Net.displayInfo(netWin);
+        Net.displayInfo(netWin, portsWin);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
