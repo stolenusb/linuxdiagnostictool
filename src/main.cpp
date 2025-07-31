@@ -41,9 +41,9 @@ int main()
 
     WINDOW* uptimeWin = newwin(2, width, startY, startX);
     WINDOW* cpuWin = newwin(height, width, startY + 2, startX);
-    WINDOW* memWin = newwin(3, width, startY, startX + width);
-    WINDOW* netWin = newwin(4, width, startY, startX + width * 2);
-    WINDOW* portsWin = newwin(2, width, startY + 4, startX + width * 2);
+    WINDOW* memWin = newwin(8, width + 7, startY, startX + width);
+    WINDOW* netWin = newwin(4, width, startY, startX + width * 2 + 7);
+    WINDOW* portsWin = newwin(2, width, startY + 4, startX + width * 2 + 7);
 
     // PC Info
     displayPcInfo(hostname, kernelversion, booted);
@@ -53,10 +53,10 @@ int main()
             break;
 
         // CPU
-        Cpu.displayInfo(cpuWin, width);
+        Cpu.displayInfo(cpuWin);
         
         // RAM
-        Mem.displayInfo(memWin, width);
+        Mem.displayInfo(memWin);
 
         // UPTIME
         upTime.displayInfo(uptimeWin);

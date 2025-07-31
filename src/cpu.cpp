@@ -52,7 +52,7 @@ CpuInfo::~CpuInfo()
         updater.join();
 }
 
-void CpuInfo::displayInfo(WINDOW *win, int width)
+void CpuInfo::displayInfo(WINDOW *win)
 {
     std::string usage = getCpuUsage();
     std::istringstream iss(usage);
@@ -63,7 +63,7 @@ void CpuInfo::displayInfo(WINDOW *win, int width)
     
     wclear(win);
     box(win, 0, 0);
-    mvwprintw(win, 0, (width - cpuTitle.size()) / 2, "%s", cpuTitle.c_str());
+    mvwprintw(win, 0, 1, "%s", cpuTitle.c_str());
     
     int line = 1;
     while(std::getline(iss, lineText)) {

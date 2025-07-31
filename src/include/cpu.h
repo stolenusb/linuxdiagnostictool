@@ -24,7 +24,7 @@ public:
     ~CpuInfo();
 
     std::string getCpuUsage();
-    void displayInfo(WINDOW* win, int width);
+    void displayInfo(WINDOW* win);
 
 private:
     std::atomic<float> usage{0.0f};

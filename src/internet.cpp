@@ -151,7 +151,8 @@ void NetInfo::displayInfo(WINDOW* win, WINDOW* win_ports)
         wclear(win);
         box(win, 0, 0);
         
-        mvwprintw(win, 0, 2, "Net Usage: %s", wan_if.c_str());
+        mvwprintw(win, 0, 1, "Net Usage: %s", wan_if.c_str());
+
         mvwprintw(win, 1, 2, "In: %.3f MB/s", received);
         mvwprintw(win, 2, 2, "Out: %.3f MB/s", transmitted);
 
@@ -166,7 +167,7 @@ void NetInfo::displayInfo(WINDOW* win, WINDOW* win_ports)
         const size_t ports_count = OpenPorts.size();
         if(ports_count > 0) {
             wresize(win_ports, 2 + ports_count, 20);
-            mvwprintw(win_ports, 0, 2, "Open ports:");
+            mvwprintw(win_ports, 0, 1, "Open ports:");
 
             for(size_t i = 0; i < ports_count; i++) {
                 const PortData& portdata = OpenPorts.at(i);

@@ -10,7 +10,7 @@ MemInfo::MemInfo()
     std::string Line;
 
     while(std::getline(File, Line)) {
-        if(Line.compare(0, 9, "MemTotal:") == 0) {
+        if(Line.rfind("MemTotal:") == 0) {
             std::istringstream iss(Line);
             std::string label, unit;
 
@@ -21,51 +21,107 @@ MemInfo::MemInfo()
 
             oss << std::fixed << std::setprecision(2) << totalMemGb << " GB";
             totalMemStr = oss.str();
+        } else if(Line.rfind("SwapTotal:") == 0) {
+            std::istringstream iss(Line);
+            std::string label, unit;
+
+            iss >> label >> totalMemSwapNum >> unit;
+
+            double totalMemSwapGb = static_cast<double>(totalMemSwapNum) / (1024 * 1024);
+            std::ostringstream oss;
+
+            oss << std::fixed << std::setprecision(2) << totalMemSwapGb << " GB";
+            totalMemSwapStr = oss.str();
 
             break;
         }
     }
 }
 
-void MemInfo::displayInfo(WINDOW *win, int width)
+void MemInfo::displayInfo(WINDOW *win)
 {
-    unsigned long long memUsage = readMemUsage();
-    double memUsageNum = static_cast<double>(memUsage) / (1024 * 1024);
-    
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(2) << 100.0 * memUsage / totalMemNum << "%";
-    std::string memTitle = "Mem Usage: " + oss.str();
-
-    std::ostringstream oss2;
-    oss2 << std::fixed << std::setprecision(2) << memUsageNum << " GB";
+    MemData memdata = readMemData();
     
     wclear(win);
     box(win, 0, 0);
+
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2) << 100.0 * memdata.memusage / totalMemNum << "%";
+    mvwprintw(win, 0, 1, "Mem Usage: %s", oss.str().c_str());
     
-    mvwprintw(win, 0, std::max(1, (int)(width - memTitle.size()) / 2), "%s", memTitle.c_str());
-    mvwprintw(win, 1, 2, "%s / %s", oss2.str().c_str(), totalMemStr.c_str());
-    
+    printInGb(win, 1, "Used:", memdata.memusage, true, totalMemStr.c_str());
+    printInGb(win, 3, "Free:", memdata.memfree);
+    printInGb(win, 4, "Buffers:", memdata.membuffers);
+    printInGb(win, 5, "Cached:", memdata.memcached);
+    printInGb(win, 6, "Swap:", memdata.memswapusage, true, totalMemSwapStr.c_str());
+
     wrefresh(win);
 }
 
-unsigned long long MemInfo::readMemUsage()
+MemData MemInfo::readMemData()
 {
     //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
+    MemData memdata;
     std::ifstream File("/proc/meminfo");
     std::string Line;
 
     while(std::getline(File, Line)) {
-        if(Line.compare(0, 13, "MemAvailable:") == 0) {
+        if(Line.rfind("MemFree:") == 0) {
             std::istringstream iss(Line);
             std::string label, unit;
-            unsigned long long availableMem;
+            unsigned long long memfree;
 
-            iss >> label >> availableMem >> unit;
+            iss >> label >> memfree >> unit;
 
-            return totalMemNum - availableMem;
+            memdata.memfree = memfree;
+        } else if(Line.rfind("MemAvailable:") == 0) {
+            std::istringstream iss(Line);
+            std::string label, unit;
+            unsigned long long memavailable;
+
+            iss >> label >> memavailable >> unit;
+
+            memdata.memusage = totalMemNum - memavailable;
+        } else if(Line.rfind("Buffers:") == 0) {
+            std::istringstream iss(Line);
+            std::string label, unit;
+            unsigned long long membuffers;
+
+            iss >> label >> membuffers >> unit;
+
+            memdata.membuffers = membuffers;
+        } else if(Line.rfind("Cached:") == 0) {
+            std::istringstream iss(Line);
+            std::string label, unit;
+            unsigned long long cached;
+
+            iss >> label >> cached >> unit;
+
+            memdata.memcached = cached;
+        } else if(Line.rfind("SwapFree:") == 0) {
+            std::istringstream iss(Line);
+            std::string label, unit;
+            unsigned long long memswapfree;
+
+            iss >> label >> memswapfree >> unit;
+
+            memdata.memswapusage = totalMemSwapNum - memswapfree;
+
+            break;
         }
     }
 
-    return 0;
+    return memdata;
+}
+
+void MemInfo::printInGb(WINDOW* win, const int pos_x, const char* memstr, const unsigned long long mem, bool usage, const char* memusagestr) const
+{
+    std::ostringstream oss;
+    double memcast = static_cast<double>(mem) / (1024 * 1024);
+    oss << std::fixed << std::setprecision(2) << memcast << " GB";
+
+    if(usage)
+        mvwprintw(win, pos_x, 2, "%s %s / %s", memstr, oss.str().c_str(), memusagestr);
+    else
+        mvwprintw(win, pos_x, 2, "%s %s", memstr, oss.str().c_str());
 }
