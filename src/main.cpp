@@ -9,6 +9,7 @@
 #include <mem.h>
 #include <uptime.h>
 #include <internet.h>
+#include <processes.h>
 
 #define ESC_BTN 27
 
@@ -33,6 +34,7 @@ int main()
     MemInfo Mem;
     UpTime upTime;
     NetInfo Net;
+    ProcInfo Procs;
     
     int height = 2 + std::thread::hardware_concurrency();
     int width = 20;
@@ -44,6 +46,7 @@ int main()
     WINDOW* memWin = newwin(8, width + 7, startY, startX + width);
     WINDOW* netWin = newwin(4, width, startY, startX + width * 2 + 7);
     WINDOW* portsWin = newwin(2, width, startY + 4, startX + width * 2 + 7);
+    WINDOW* procsWin = newwin(8, width + 26, startY, startX + width * 3 + 7);
 
     // PC Info
     displayPcInfo(hostname, kernelversion, booted);
@@ -64,6 +67,9 @@ int main()
         // NET
         Net.displayInfo(netWin, portsWin);
 
+        // PROCESSES
+        Procs.displayInfo(procsWin);
+
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     
@@ -71,6 +77,8 @@ int main()
     delwin(memWin);
     delwin(uptimeWin);
     delwin(netWin);
+    delwin(portsWin);
+    delwin(procsWin);
     endwin();
     
     return 0;

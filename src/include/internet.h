@@ -20,6 +20,7 @@ public:
 
     void displayInfo(WINDOW* win, WINDOW* win_ports);
     std::string wan_if;
+    
 private:
     NetData readNetData();
     void getNetUsage();
