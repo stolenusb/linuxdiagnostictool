@@ -10,12 +10,16 @@ This tool is a simple terminal-based system monitoring tool written in C++. It d
 - Network usage (MB/s received and sent on the wan interface)
 - Open ports (TCP and UDP)
 - Basic system info (hostname, kernel version, boot time)
+- Top 5 processes sorted by CPU Usage.
 
 ## Build & Run
 
 ```bash
+./configure
 make
-./bin/DiagTool
+sudo make install
+
+linuxdiag
 ```
 
 ## Requirements
@@ -28,5 +32,6 @@ make
 - Boot time is based on /proc/stat (btime).
 - Network usage is calculated using /proc/net/dev.
 - Open ports are read from /proc/net/tcp and /proc/net/udp.
+- Processes cpu & mem usage are read from /proc/{process pid}/stat
 
 ![Tool Screenshot](screenshot.png)

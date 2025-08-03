@@ -1,5 +1,4 @@
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc/include
+-include Makefile.config
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(patsubst src/%.cpp, build/%.o, $(SRC))
@@ -9,12 +8,16 @@ all: $(BIN)
 
 $(BIN): $(OBJ)
 	@mkdir -p bin
-	$(CXX) $(CXXFLAGS) -o $@ $^ -lncurses
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Compile .cpp into build/*.o
 build/%.o: src/%.cpp
 	@mkdir -p build
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+install:
+	@mkdir -p $(PREFIX)/bin
+	cp $(BIN) $(PREFIX)/bin/linuxdiag
+	echo "Installed to $(PREFIX)/bin/linuxdiag"
 
 clean:
 	rm -rf build/ bin/

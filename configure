@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+echo "Checking system requirements..."
+
+if ! command -v g++ > /dev/null; then
+    echo "Error: g++ not found. Please install g++."
+    exit 1
+fi
+if ! echo -e "#include <ncurses.h>\nint main() { initscr(); endwin(); return 0; }" | g++ -x c++ - -lncurses -o /dev/null &>/dev/null; then
+    echo "Error: ncurses library not found. Install it with: sudo apt install libncurses-dev"
+    exit 1
+fi
+
+echo "Generating Makefile.config..."
+
+cat <<EOF > Makefile.config
+CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc/include
+LDFLAGS = -lncurses
+PREFIX = /usr/local
+EOF
+
+echo "Done. Run \"make\" to build and \"sudo make install\" to install."
