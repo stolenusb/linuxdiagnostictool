@@ -15,6 +15,8 @@ This tool is a simple terminal-based system monitoring tool written in C++. It d
 ## Build & Run
 
 ```bash
+git clone https://github.com/stolenusb/linuxdiagnostictool.git
+cd linuxdiagnostictool
 ./configure
 make
 sudo make install
